@@ -1,0 +1,361 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\section{Weak Optimal Transport (WOT)}}
+
+\subsection{Introduction}
+In this section, we generalize the notion of optimal transport problem by considering a broader class of admissible costs. Firstly, we recall some results about the disintegration of measures.
+
+\begin{definition}
+    A transition kernel from a measurable space $(E, \mathcal{E})$ to a measurable space $(F, \mathcal{F})$ is a map $K : E \times \mathcal{F} \to [0,1]$ such that:
+    \begin{enumerate}
+        \item $x \mapsto K(x, A)$ is $\mathcal{E}$-measurable for all $A\in\mathcal{F}$.
+        \item $B \mapsto K(x, B)$ is a probability measure on $(F, \mathcal{F})$ for all $x\in E$.
+    \end{enumerate}
+\end{definition}
+
+\begin{theorem}
+    Let $\mu$ be a probability measure on $(E, \mathcal{E})$, and $K$ a transition kernel from $(E, \mathcal{E})$ to $(F, \mathcal{F})$. Then, there exists a unique probability measure $\mu\otimes K$ on $(E\times F, \mathcal{E}\otimes\mathcal{F})$ such that 
+    $$
+    (\mu\otimes K) (A\times B) = \int_A K(x, B) d\mu(x) \quad \forall A\in\mathcal{E}, \ B\in\mathcal{F}.
+    $$
+\end{theorem}
+
+\begin{theorem} (Disintegration)
+    Let $X, Y$ be Polish spaces, and $\pi$ a probability measure on $X\times Y$ with first marginal $\mu\in\mathcal{P}(X)$. Then, there exists a family $\{\pi_x\}_{x\in X}$ of probability measures on $Y$, called disintegration of $\pi$ respect to $\mu$, such that:
+    \begin{enumerate}
+        \item $x \mapsto \int_Y f(x, y) d\pi_x(y)$ Borel measurable for $\mu$-a.s. $x\in X$.
+        \item For any $f: X \times Y \to \R$ bounded, Borel measurable, it holds
+        $$
+        \int_{X\times Y} f(x, y) d\pi(x, y) = \int_X \left(\int_Y f(x, y) d\pi_x(y) \right) d\mu(x)
+        $$
+    \end{enumerate}
+    Moreover, the family $\{\pi_x\}_{x\in X}$ is essentially unique, i.e. for any other family $\{\tilde\pi_x\}_{x\in X}$ it holds $\pi_x = \tilde \pi_x$ for $\mu$-a.e. $x\in X$.
+\end{theorem}
+
+The weak optimal transport problem was first introduced by Gozlan, Roberto, Samson and Tetali \cite{gozlan2017kantorovich}, as consequence of the following observation. \\
+Consider the Kantorovich optimal transport problem with marginals $\mu\in\mathcal{P}(X), \ \nu\in\mathcal{P}(Y)$ and cost function $c: X \times Y \to \extRplus$. Then, we have
+\begin{align*}
+    P^K_c(\mu, \nu) &= \inf_{\pi\in Cpl(\mu, \nu)} \int_{X\times Y} c(x, y) d\pi(x, y) = \\
+    &= \inf_{\pi\in Cpl(\mu, \nu)} \int_X \int_Y c(x, y) \ d\pi_x(y) \ d\mu(x) \quad \text{ by disintegration of $\pi$ by $\mu$} \\
+    &= \inf_{\pi\in Cpl(\mu, \nu)} \int_X C(x, \pi_x) \ d\mu(x)
+\end{align*}
+where $C(x, \rho) := \int_Y c(x, y) \ d\rho(y)$ weak cost functional for $\rho\in\mathcal{P}(Y)$. \\
+Thus, we may define a notion of weak optimal transport by enlarging the class of admissible cost functions $c(x, y)$ to costs of the type $C(x, \rho)$ for $x\in X$ and $\rho\in\mathcal{P}(Y)$. 
+
+\begin{definition}
+    A cost function for a weak optimal transport problem with distributions $\mu\in\mathcal{P}(X), \ \nu\in\mathcal{P}_p(Y)$ is a measurable map $C: X \times \mathcal{P}_p(Y) \to \extRplus$.
+\end{definition}
+
+\begin{definition}
+    The weak optimal transport functional with cost $C:X\times \mathcal{P}_p(Y)\to\extRplus$ is the map $V^{WOT}_C : \mathcal{P}(X)\times\mathcal{P}_p(Y)\to\extRplus$ such that
+    $$
+    V^{WOT}_C(\mu, \nu) := \inf_{\pi\in Cpl(\mu, \nu)} \int_X C(x, \pi_x) \ d\mu(x) 
+    \quad \text{(WKP)}
+    $$
+    where $\{\pi_x\}_{x\in X}\subseteq \mathcal{P}(Y)$ is the family of probability measures on $Y$ obtained by disintegration of $\pi$ respect to $\mu$. 
+\end{definition}
+
+\begin{lemma}
+    Let $\pi\in\mathcal{P}(X\times Y)$ be a probability measure with marginals $\mu\in\mathcal{P}(X), \ \nu\in\mathcal{P}(Y)$ such that $\pi \ll \mu\otimes\nu$. Then, the following hold:
+    \begin{enumerate}[(i)]
+        \item $\pi_x \ll \nu$ for $\mu$-a.s. $x\in X$
+        \item The Radon-Nikodym of $\pi_x$ respect to $\nu$ is given by
+        $$
+        \frac{d\pi_x}{d\nu}(y) = \frac{d\pi}{d\mu\otimes\nu} (x,y) \quad \text{for $\mu\otimes\nu$-a.s $(x,y)\in X\times Y$}.
+        $$
+    \end{enumerate}
+\end{lemma}
+
+\begin{example} \textit{Entropic Optimal Transport} \\
+    In many application of classical optimal transport, some kind of regularization is required in order to implement efficient algorithms with provable convergence. The most popular choice in this context is entropic regularization, as it allows for Sinkhorn's algorithm, that can be implemented at large scale and is analytically tractable. \\
+    The entropic optimal transport functional with cost $c: X \times Y \to \extRplus$ is the map $V^{EOT}_c : \mathcal{P}(X) \times \mathcal{P}(Y) \to \extRplus$ such that 
+    $$
+    V^{EOT}_c(\mu, \nu) := \inf_{\pi\in Cpl(\mu, \nu)} \int_{X\times Y} c \ d\pi + \varepsilon H(\pi \mid \mu\otimes\nu),
+    $$
+    where $\varepsilon>0$, and $H : \mathcal{P}(X)\times \mathcal{P}(Y) \to \extRplus$ is the relative entropy given by
+    \begin{align*}
+        H(\nu \mid \rho) :=
+        \begin{cases}
+            \int_X \log\left(\frac{d\nu}{d\rho}(x)\right) d\nu(x) & \eta \ll \nu, \\
+            +\infty & \text{otherwise}.
+        \end{cases}
+    \end{align*} 
+    The basic idea is to solve the problem for arbitrary  small $\varepsilon>0$ to obtain an approximation of the unregularized optimal transport problem , corresponding to $\varepsilon=0$, and then consider the optimizer for $\varepsilon\to 0$. \\
+    Moreover, note the entropic optimal transport problem can be interpreted as a weak optimal transport problem. Indeed, for $\pi \ll \mu\otimes\nu$ we get by disintegration theorem 
+    \begin{align*}
+        H(\pi \mid \mu\otimes\nu) 
+        &= \int_{X\times Y} \log\left(\frac{d\pi}{d\mu\otimes\nu}(x, y)\right) d\pi(x, y) = \\
+        &= \int_X \int_Y  \log\left(\frac{d\pi_x}{d\nu}(y)\right) \ d\pi_x(y) \ d\mu(x) = \\
+        &= \int_X H(\pi_x \mid \nu)  \ d\mu(x)
+    \end{align*}
+    Then, we have
+    \begin{align*}
+        V^{EOT}_c(\mu, \nu) 
+        &= \inf_{\pi\in Cpl(\mu, \nu)} \int_{X\times Y} c \ d\pi + \varepsilon H(\pi \mid \mu\otimes\nu) = \\
+        &= \inf_{\pi\in Cpl(\mu, \nu)} \int_X \int_Y c(x, y) \ d\pi_x(y) \ d\mu(x) + \varepsilon \int_X H(\pi_x \mid \nu)  \ d\mu(x) = \\
+        &= \inf_{\pi\in Cpl(\mu, \nu)} \int_X C(x, \pi_x) \ d\mu(x) = V^{WOT}_C(\mu, \nu),
+    \end{align*}
+    where $C(x, \rho) = \varepsilon H(\rho \mid \nu) + \int_Y c(x, y) \ d\rho(y)$ is the associated weak cost function. \\
+    For a more detailed treatment of this topic, see \cite{entropicOT}.
+\end{example}
+
+\subsection{Existence, duality and structural results}
+
+In this section, we want to adapt classical optimal transport results to the weak setting. In particular, we want to answer to the following questions:
+\begin{itemize}
+    \item Does (WKP) admit an optimizer? Is it unique?
+    \item Does duality hold for (WKP)?
+    \item Is there any structure in the optimizers of (WKP)?
+\end{itemize}
+
+Recall that in the classical setting, the crucial point for the existence of optimizers to the Kantorovich problem was the lower-semicontinuity property of the map $$\pi \mapsto \int_{X\times Y} c \ d\pi,$$ which was guaranteed by requiring the cost $c: X \times Y \to \extRplus$ to be bounded below and lower-semicontinuous. \\
+However, in the weak setting the implication does not hold anymore, and the map $$\pi \mapsto \int_X C(x, \pi_x) \ d\mu(x)$$ is in general not lower-semicontinuous, even if the cost $C$ is continuous on $X\times \mathcal{P}_p(Y)$.
+
+\begin{theorem} (Existence)  Let $C: X \times \mathcal{P}_p(Y) \to \extRplus$ be a jointly lower-semicontinuous with respect to the product topology on $X\times \mathcal{P}_p(Y)$, bounded below and convex in the second argument, cost function for a weak optimal transport problem with marginals $\mu\in\mathcal{P}(X), \ \nu\in\mathcal{P}_p(Y)$. Then, the following hold:
+\begin{enumerate}[(i)]
+    \item The map $\pi \mapsto \int_X C(x, \pi_x) \ d\mu(x)$ is lower-semicontinuous.
+    \item There exists an optimizer to (WKP), i.e. $$ \exists \ \pi^* \in \argmin_{\pi\in Cpl(\mu, \nu)} \int_X C(x, \pi_x) \ d\mu(x).$$
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+    Theorem 1.1, \cite{backhoff2019existence}.
+\end{proof}
+
+\begin{theorem} 
+    \label{thm:WOT_duality}
+    (Duality)
+    Let $C: X \times \mathcal{P}_p(Y)\to \extRplus$ be a jointly lower-semicontinuous with respect to the product topology on $X\times\mathcal{P}_p(Y)$, bounded from below, and convex in the second argument, cost function for a weak optimal transport problem with marginals $\mu\in\mathcal{P}(X), \ \nu\in\mathcal{P}_p(Y)$. Then,
+    \begin{align*}
+        \inf_{\pi\in Cpl(\mu, \nu)} \int_X C(x, \pi_x) \ d\mu(x) 
+        &= \sup_{\substack{(\varphi, \psi)\in D(C) \\ \varphi\in C_b(X), \psi\in C_p(Y)}} \int_X \varphi \ d \mu + \int_Y \psi \ d \nu
+    \end{align*}
+    where $D(C) :=\{(\varphi, \psi) : X\times Y \to \R \mid \varphi \oplus \int\psi d\rho \leq C, \ |\psi(y)| \leq K(1 + d(y, y_0)^p)\}$. \\
+    Moreover, duality holds also with $C$-transforms, i.e.
+    $$
+    \inf_{\pi\in Cpl(\mu, \nu)} \int_X C(x, \pi_x) \ d\mu(x) 
+    = \sup_{\psi\in C_{b,p}(Y)} \int_X \psi^C \ d \mu + \int_Y \psi \ d \nu,
+    $$
+    where $\psi^C : X \to \extRplus$ such that $\psi^C(x) = \inf_{\rho\in\mathcal{P}_p(Y)} C(x, \rho) - \int \psi \ d \rho$
+\end{theorem}
+\begin{proof}
+    Theorem 1.2, \cite{backhoff2019existence}.
+\end{proof}
+
+\begin{remark}
+    The restriction to the space $\psi\in C_{b, p}(Y)$ is necessary, since the $C$-transform $\psi^C$ might not be integrable only for $\psi\in C_p(Y)$.
+\end{remark}
+
+Now, we will consider some weak generalizations of the classical optimal transport theorems in the real finite-dimensional setting $X= Y=\R^d$, namely the Kantorovich-Rubenstein formula and the Brenier theorem.
+
+\begin{lemma}
+    \label{lemma:Fenchel-Moreau_cor}
+    Let $\varphi: \R^d \to \extRplus$ be lower-semicontinuous, bounded below function. Then, 
+    $$
+    \varphi^{**}(x) = \inf_{\substack{\rho \ \in \mathcal{P}_1(\R^d) \\ mean(\rho) = x}} \int \varphi \ d\rho \quad \text{for any } x\in\R^d.
+    $$
+\end{lemma}
+\begin{proof}
+    Note that the function $\psi : \R^d \to \extRplus$ given by
+    $$
+    \psi(x) = \inf_{\substack{\rho \ \in \mathcal{P}_1(\R^d) \\ mean(\rho) = x}} \int_{\R^d} \varphi(y) \ d\rho(y)
+    $$
+    is lower-semicontinuous and convex, since $\varphi$ lower-semicontinuous and bounded below. \\
+    Moreover, it holds $\psi(x) \leq \varphi(x)$ by taking $\rho = \delta_x$. Hence, $\psi$ is a lower-semicontinuous convex function smaller than $\varphi$. Therefore, we have $\psi\leq\varphi^{**}$ by Fenchel-Moreau theorem. \\
+    Viceversa, fix $\rho\in\mathcal{P}_1(\R^d)$ with $mean(\rho) = x$, and obtain
+    \begin{align*}
+        \varphi^{**}(x) 
+        &= \varphi^{**}(mean(\rho)) 
+        = \varphi^{**}\left(\int_{\R^d} y \ d\rho(y)\right) \\
+        &\leq \int_{\R^d} \varphi^{**}(y) \ d\rho(y) \quad \text{by Jensen, since $\varphi^{**}$ convex} \\
+        &\leq \int_{\R^d} \varphi(y) \ d \rho(y) \quad \text{by } \varphi^{**} \leq \varphi.
+    \end{align*}
+\end{proof}
+
+\begin{theorem} (Kantorovich-Rubenstein) 
+    The weak optimal transport problem with cost $C(x, \rho) = |x - mean(\rho)|$ on $\R^d$, and marginals $\mu, \nu\in\mathcal{P}_1(\R^d)$ satisfies the duality
+    $$
+    \inf_{\pi \in Cpl(\mu, \nu)} \int C(x, \pi_x) \ d\mu(x) = \sup_{\substack{\varphi \ 1\text{-Lip, concave}}} \int \varphi \ d(\nu - \mu). 
+    $$
+\end{theorem}
+\begin{proof}
+    Note that the weak cost function $C(x, \rho) = |x-mean(\rho)|$ is continuous, non-negative and convex in the second argument, then we get by duality theorem 
+    $$
+    \inf_{\pi \in Cpl(\mu, \nu)} \int C(x, \pi_x) \ d\mu(x)
+    = \sup_{\psi\in C_{b,1}(\R^d)} \int_{\R^d} \psi^C \ d\mu + \int_{\R^d} \psi \ d\nu.
+    $$
+    Moreover, note that the $C$-transform of measurable map $\psi:\R^d\to\R$ such that $\psi\in C_{b,1}(\R^d)$ is given by
+    \begin{align*}
+        \psi^C(x) 
+        &= \inf_{\rho\in \mathcal{P}_1(\R^d)} |x-mean(\rho)| - \int \psi \ d\rho \\
+        &= \inf_{z\in\R^d} \ \inf_{\substack{\rho\in\mathcal{P}_1(\R^d) \\ mean(\rho)=z}} |x-z| - \int \psi \ d\rho \\
+        &= \inf_{z\in\R^d} \left(|x-z| + \inf_{\substack{\rho\in\mathcal{P}_1(\R^d) \\ mean(\rho)=z}} \int -\psi \ d\rho\right) \\
+        &= \inf_{z\in\R^d} |x-z| + (-\psi)^{**}(z),
+    \end{align*}
+    by Lemma \ref{lemma:Fenchel-Moreau_cor}. In particular, if $\psi$ is also concave, then $-\psi$ is convex and $(-\psi)^{**} = -\psi$ by Fenchel-Moreau theorem. Hence, we obtain 
+    $$
+    \psi^C(x) = \inf_{z\in\R^d} |x-z| -\psi(z) = \psi^c(x) = -\psi(x),
+    $$
+    since $\psi\in C_{b,1}(\R^d)$ is $1$-Lipschitz, where $c(x, y) = |x - y|$ metric cost in $\R^d$. Therefore, we obtain
+    \begin{align*}
+        \inf_{\pi \in Cpl(\mu, \nu)} \int C(x, \pi_x) \ d\mu(x)
+        &= \sup_{\psi\in C_{b,1}(\R^d)} \int_{\R^d} \psi^C \ d\mu + \int_{\R^d} \psi \ d\nu \\
+        &= \sup_{\substack{\psi \ 1\text{-Lip, concave}}} \int -\psi \ d\mu + \int \psi \ d\nu.
+    \end{align*}
+\end{proof}
+
+Now, we give a weak version of the Brenier theorem on $X=Y=\R^d$ with quadratic cost, firstly proved in 2019 by \cite{backhoff2019existence}.
+
+\begin{definition}
+    A probability $\mu\in\mathcal{P}_1(\R^d)$ is in convex order with a probability $\nu\in\mathcal{P}_1(\R^d)$, and we write $\mu \leq_c \mu$, if $$\int f \ d\mu \leq \int f \ d\nu$$ for any $f: \R^d \to \extRplus$ convex.
+\end{definition}
+
+\begin{theorem} (Brenier-Strassen)
+    Let $X=Y=\R^d$ with cost $C(x, \rho) = |x-mean(\rho)|^2$, and marginals $\mu\in\mathcal{P}_2(\R^d), \nu\in\mathcal{P}_1(\R^d)$. Then, there exists a unique $\mu^*\in\mathcal{P}_2(\R^d)$ of the form $\mu^*=\nabla\varphi(\mu)$ for some $\varphi: \R^d\to \R$ $1$-Lipschitz, such that $$\mu \leq_C \nu,$$ and $$\mathcal{W}_2(\mu^*, \mu)^2 = \inf_{\eta \leq_C \nu} \mathcal{W}_2(\eta, \nu)^2 = \inf_{\pi\in Cpl(\mu, \nu)} \int |x-mean(\pi_x)|^2 \ d\mu(x).$$
+    Moreover, the weak optimal problem $V^{WOT}_C$ admits optimizers, and a coupling $\pi\in Cpl(\mu, \nu)$ is optimal if and only if $mean(\pi_x) = \nabla\varphi(x)$ $\mu$-a.s.
+\end{theorem}
+
+\subsection{Martingale Optimal Transport (MOT)}
+In this section, we will always consider the case $X=Y=\R^d$.
+
+\begin{definition}
+    A martingale coupling of two probability measures $\mu, \nu\in\mathcal{P}_1(\R^d)$ is a coupling $\pi\in Cpl(\mu, \nu)$ such that 
+    $$
+    mean(\pi_x) = x \quad \text{ for $\mu$-a.s. $x\in \R^d$},
+    $$
+    where $mean(\rho) : \mathcal{P}_1(\R^d) \to \R^d$ such that $\text{mean}(\rho) = \int_{\R^d} x \ d\rho(x)$.
+\end{definition}
+We will denote the space of martingale couplings between $\mu$ and $\nu$ by $Cpl^M(\mu, \nu)$. 
+
+\begin{example} \hfill
+    \begin{enumerate}[(i)]
+        \item \textit{Martingale Monge Couplings} \\
+        Let $\mu\in\mathcal{P}_1(\R^d)$, then the Monge coupling $\pi:=(Id, Id)\mu\in Cpl(\mu, \mu)$ is a martingale coupling. Indeed, we have
+        $$
+        mean(\pi_x) = x \quad \mu\text{-a.s.}
+        $$
+        Viceversa, if $\pi:=(Id, T)\mu\in Cpl(\mu, \nu)$ is a Monge coupling between $\mu, \nu$ induced by a transport map $T$, and $\pi$ is a martingale coupling, then
+        $$
+        x = mean(\pi_x) = T(x) \quad \mu\text{-a.s.}
+        $$
+        \item \textit{Martingale Dirac Couplings} \\
+        Let $\delta_x\in\mathcal{P}_1(\R^d)$ be a Dirac measure, and $\nu\in\mathcal{P}_1(\R^d)$ with $mean(\nu)=x$. Then, the unique martingale coupling between $\delta_x$ and $\nu$ is $\delta_x\otimes\nu$. In particular, it holds
+        $$
+        Cpl(\delta_x, \nu) = Cpl^M(\delta_x, \nu) = \{\delta_x \otimes\nu\}.
+        $$
+    \end{enumerate}
+\end{example}
+
+\begin{definition}
+    The martingale optimal transport functional with  cost $c : X \times Y \to \extRplus$ is the map $V^{MOT}_c : \mathcal{P}_1(\R^d)\times\mathcal{P}_1(\R^d)\to\extRplus$ such that
+    $$
+    V^{MOT}_c(\mu, \nu) := \inf_{\pi\in Cpl^M(\mu, \nu)} \int_{X\times Y} c \ d\pi.
+    $$
+\end{definition}
+
+\begin{remark}
+    The martingale optimal transport problem can be interpreted as a weak optimal transport problem with degenerate cost function 
+    \begin{align*}
+        C(x, \rho) :=
+        \begin{cases}
+            \int_Y c(x, y) \ d\rho(y) & mean(\rho)=x \\
+            +\infty & \text{otherwise}.
+        \end{cases} 
+    \end{align*}
+\end{remark}
+
+A natural first question is whether the martingale transport problem is well posed. In the classical Kantorovich formulation of optimal transport, a fundamental property is that the set of couplings $Cpl(\mu,\nu)$ is always non-empty. One may therefore ask whether an analogous existence result holds in the martingale setting. Strassen's theorem characterizes the existence of martingale couplings.
+
+\begin{theorem} (Strassen)
+    Let $\mu, \nu\in\mathcal{P}_1(\R^d)$, then $Cpl^M(\mu, \nu) \neq \varnothing \iff \mu \leq_c \nu$.
+\end{theorem}
+\begin{proof}
+    Fix $\mu, \nu\in \mathcal{P}_1(\R^d)$, and note that there exists a martingale coupling between $\mu$ and $\nu$ if and only if 
+    $$
+    V^{WOT}_C(\mu, \nu) = \inf_{\pi\in Cpl(\mu , \nu)} \int_{\R^d} C(x, \pi_x) \ d \mu(x) = 0
+    $$
+    for the degenerate cost function
+    \begin{align*}
+        C(x, \rho) = 
+        \begin{cases}
+            0 & mean(\rho) = x \\
+            +\infty & \text{otherwise}.
+        \end{cases}
+    \end{align*}
+    Moreover, the weak cost $C$ is a jointly lower-semicontinuous, bounded below and convex in $\mathcal{P}_1(\R^d)$, and we get by Theorem \ref{thm:WOT_duality}
+    \begin{align*}
+        V^{WOT}_C(\mu, \nu) 
+        &= \sup_{\psi\in C_{b,1}(\R^d)} \int_{\R^d} \psi^C \ d \mu + \int_{\R^d} \psi \ d \nu.
+    \end{align*}
+    Furthermore, the $C$-transform of $\psi$ is given by
+    \begin{align*}
+        \psi^C(x) 
+        &= \inf_{\rho\in\mathcal{P}_1(\R^d)} C(x, \rho) - \int_{\R^d} \psi(y) \ d \rho(y) \\
+        &=  \inf_{\substack{\rho\in\mathcal{P}_1(\R^d) \\ mean(\rho) = x}} 0 - \int_{\R^d} \psi(y) \ d \rho(y) \\
+        &= (-\psi)^{**}(x) \quad \text{for all } x\in\R^d,
+    \end{align*}
+    by Lemma \ref{lemma:Fenchel-Moreau_cor}, since $\psi\in C_{b, 1}(\R^d)$ is lower-semicontinuous and bounded below. \\
+    Finally, we get
+    \begin{align*}
+        V^{WOT}_C(\mu, \nu) 
+        &= \sup_{\psi\in C_{b,1}(\R^d)} \int_{\R^d} \psi^C \ d \mu + \int_{\R^d} \psi \ d \nu \\
+        &= \sup_{\psi\in C_{b,1}(\R^d)} \int_{\R^d} (-\psi)^{**} \ d \mu - \int_{\R^d} (-\psi) \ d \nu \\
+        &\geq \sup_{\psi\in C_{b,1}(\R^d)} \int_{\R^d} (-\psi)^{**} \ d \mu - \int_{\R^d} (-\psi)^{**} \ d \nu \quad \text{since } (-\psi)^{**}\leq -\psi \\
+        &\geq \sup_{\substack{f \text{ convex}}} \int_{\R^d} f \ d\mu - \int_{\R^d} f \ d \nu,
+    \end{align*}
+    since the biconjugate $(-\psi)^{**}$ is always a convex function. Then, there exists a martingale coupling between $\mu$ and $\nu$ if and only if $$ \sup_{\substack{f \text{ convex}}} \int_{\R^d} f \ d\mu - \int_{\R^d} f \ d \nu \leq 0,$$ which is equivalent to the convex ordering of $\mu, \nu$.
+\end{proof}
+
+Once non-triviality is established, we are interested in the topological properties of the space of martingale couplings $Cpl^M(\mu, \nu)$.\\
+\noindent
+Note that, in the following, we will consider only the case $d=1$.
+\begin{theorem}
+    Let $\mu, \nu\in\mathcal{P}_1(\R)$. Then, $Cpl^M(\mu, \nu)\subseteq Cpl(\mu, \nu)$ convex, compact.
+\end{theorem}
+\begin{proof}
+    
+\end{proof}
+
+Once again, we are interested in extending the classical results of optimal transport to the martingale optimal transport.
+
+\begin{theorem}
+    (Existence) Let $c: \R\times \R\to \R$ be a LSC, bounded below cost function for a martingale optimal transport problem with marginals $\mu, \nu\in\mathcal{P}_1(\R)$. Then, there exists an optimal martingale transport plan, i.e. $$\exists \ \pi^*\in \argmin_{\pi \in Cpl^M(\mu, \nu)} \int c \ d\pi.$$
+\end{theorem}
+
+\begin{theorem}
+    (Duality)  Let $c: \R\times \R\to \R$ be a LSC, bounded below cost function for a martingale optimal transport problem with marginals $\mu, \nu\in\mathcal{P}_1(\R)$. Then, duality holds, i.e.
+    $$
+    \inf_{\pi\in Cpl^M(\mu, \nu)} \int c \ d\pi = \sup_{\substack{f, g, h\in C_b(\R) \\ f(x)+g(y)+h(x)(y-x)\leq c(x, y)}} \left(\int_\R f \ d\mu + \int_\R g \ d\nu\right).
+    $$
+\end{theorem}
+
+\begin{remark}
+    Martingale duality may not hold. \\
+    For example, consider $X=Y=[0,1]$ with (non lower-semicontinuous) cost 
+    \begin{align*}
+        c(x, y) = 
+        \begin{cases}
+            1 & x=y \\
+            0 & \text{otherwise}.
+        \end{cases}
+    \end{align*}
+    Then, duality does not hold for the martingale problem with marginals $\mu=\nu=\lambda_{|_{[0,1]}}$.
+\end{remark}
+
+\begin{definition}
+    A couple $\mu, \nu\in\mathcal{P}_1(\R)$ is irreducible if 
+    \begin{enumerate}
+        \item $\mu\leq_C\nu$
+        \item There exists a martingale coupling $\pi^*\in Cpl^M(\mu, \nu)$ such that, for all $A, B\in\mathcal{B}(\R)$ 
+        $$\mu(A), \ \nu(B)>0 \implies \pi(A\times B)>0.$$
+    \end{enumerate}
+\end{definition}
+
+\begin{theorem} (Optimality)
+    Let $\mu, \nu\in\mathcal{P}_1(\R)$ irreducible, compactly supported, and let $c: \R\times \R\to \R$ be a continuous, bounded cost function. Then, 
+    $$
+    \inf_{\pi\in Cpl^M(\mu, \nu)} \int c \ d\pi = \int f \ d \mu + \int f \ d\nu
+    $$
+    for some $f\in L^1(\mu), g\in L^1(\nu), h\in C(\R)$.
+\end{theorem}
+
+\end{document}

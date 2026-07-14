@@ -1,0 +1,79 @@
+% ================================================================
+%% Math Environments Configuration
+% ================================================================
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem*{solution}{Solution}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+
+%\newtheoremstyle{exercises}
+%  {}   % space above
+%  {}   % space below
+%  {} % body font
+%  {}      % indent
+%  {} % head font
+%  {}      % punctuation
+%  { }     % space after head
+%  {}      % theorem head specs
+
+
+% ================================================================
+%% Page Style Configuration
+% ================================================================
+
+\usepackage[  %% Set page margins
+    top=2.5cm,
+    bottom=2.5cm,
+    left=2.5cm,
+    right=2.5cm
+]{geometry}
+
+
+
+% ================================================================
+%% Other Packages
+% ================================================================
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{subfiles}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumerate}
+
+
+% ================================================================
+%% Bibliography Configuration
+% ================================================================
+\usepackage[backend=biber]{biblatex}
+\usepackage{url}
+\addbibresource{references.bib}
+
+
+
+% ================================================================
+%% New Commands
+% ================================================================
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Pbb}{\mathbb{P}}
+
+\newcommand{\extRplus}{\R\cup\{+\infty\}}
+\newcommand{\extRminus}{\R\cup\{-\infty\}}
+\newcommand{\argmin}{\text{argmin}}

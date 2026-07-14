@@ -1,0 +1,77 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{config}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{\fill}
+    {\Large Topics in Optimal Transport Theory\par}
+    \vspace{0.5cm}
+
+    {\large Simone Puleio\par}
+    \vspace{0.3cm}
+
+    {\large June 2026\par}
+
+    \vspace*{\fill}
+\end{titlepage}
+
+\pagenumbering{Roman}
+
+\newpage
+\tableofcontents
+
+\newpage
+\section*{Preface}
+\addcontentsline{toc}{section}{Preface}
+The theory of optimal transport originates in a problem posed by Gaspard Monge in 1781, motivated by practical questions in engineering and military logistics. Monge considered the problem of transporting a distribution of mass to another in such a way that the total cost of displacement is minimized, where cost is measured by the distance mass elements are moved. Despite its intuitive formulation, Monge’s original problem is highly nonlinear and lacks a general solution framework. \\
+
+\noindent
+A major breakthrough came in the 1940s with the work of Leonid Kantorovich, who introduced a relaxed formulation of the problem. Instead of seeking a deterministic map transporting mass, Kantorovich considered transport plans, i.e., joint probability measures with prescribed marginals. This convexification of the problem not only ensured existence of solutions under broad conditions but also revealed deep connections with functional analysis and linear programming. Kantorovich’s work laid the foundation for what is now known as the modern theory of optimal transport, and earned him the Nobel Prize in Economics in 1975. \\
+
+\noindent
+In subsequent decades, the theory developed into a rich mathematical subject, with contributions from Brenier, McCann, and others, who uncovered the geometric structure of optimal maps in Euclidean spaces and their relation to convexity and partial differential equations. In particular, Brenier’s theorem established that in quadratic cost settings, optimal transport maps in Euclidean space are gradients of convex functions, revealing a deep link between optimal transport and convex analysis.
+
+\newpage
+\section*{Notation}
+\addcontentsline{toc}{section}{Notation}
+
+\begin{tabular}{ll}
+$\mathcal{P}(X)$ &  Probability measures on $X$ \\
+\vspace{3pt}
+$\mathcal{P}_p(X)$ &  Probability measures on $X$ with finite $p$-moment \\
+\vspace{3pt}
+$\mathcal{T}(\mu, \nu)$  &  Transport maps from $\mu$ to $\nu$ \\
+\vspace{3pt}
+$Cpl(\mu, \nu)$  &  Couplings between $\mu$ and $\nu$ \\
+\vspace{3pt}
+$\Pi(\mu_1, \dots, \mu_n)$ &  $n$-marginal probability measures with marginals $\mu_1, \dots, \mu_n$ \\
+\vspace{3pt}
+$Cpl^M(\mu, \nu)$  &  Martingale couplings between $\mu$ and $\nu$ \\
+\vspace{3pt}
+$Cpl_{bc}(\mu, \nu)$  &  Bicausal couplings between $\mu$ and $\nu$ \\
+\vspace{3pt}
+$C_b(X)$  &  Continuous, bounded functions on $X$ \\
+\vspace{3pt}
+$C_p(X)$  &  Continuous functions on $X$ of $p$-growth\\
+\vspace{3pt}
+$C_{b,p}(X)$ &  Continuous, bounded functions of $p$-growth \\
+\vspace{3pt}
+$\mathcal{W}_p(\mu, \nu)$  &  $p$-Wasserstein distance between $\mu$ and $\nu$ \\
+\end{tabular}
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\section{Optimal Transport (OT)}
+\subfile{sections/section1}
+
+\newpage
+\section{Weak Optimal Transport (WOT)}
+\subfile{sections/section2}
+
+\newpage
+\addcontentsline{toc}{section}{References}
+\printbibliography
+
+\end{document}
